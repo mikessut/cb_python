@@ -1,8 +1,9 @@
 from distutils.core import setup
 
-setup(name='cb_python',
+setup(name='clearbox',
       version='0.1',
       description='Clearbox Python Module',
       author='Mike Sutton',
-      packages=['cb_python'],
+      packages=['clearbox'],
+      requires=['numpy', 'matplotlib']
      )
