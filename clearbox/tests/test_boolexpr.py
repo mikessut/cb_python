@@ -145,3 +145,76 @@ class TestBoolExpr(unittest.TestCase):
 
         ThingA.__none_result__ = BoolExprNoneResultException
         self.assertRaises(BoolExprNoneResultException, e.eval, a)
+
+    def test_doc_demo(self):
+        class ThingA(BoolExprEnabledClass):
+
+            foo = 123
+            bar = [1,2,3,4,5]
+
+        # Instance doesn't need to exist to create the expression.
+        e = ThingA.foo == 123
+        a = ThingA()
+        assert(e.eval(a))
+
+        # Can still access instance parameters
+        print("ThingA parameters:", a.foo, a.bar)
+
+        # Any function can be run on the parameter using .syntax. For example,
+        # the following runs the len() function on the .bar parameter:
+        e = ThingA.bar.len == 5
+        assert(e.eval(a))
+
+        # If multiple objects are used for comparison, they are pass as multiple
+        # *args to eval function. Example:
+
+        class ThingB(BoolExprEnabledClass):
+            bparam = 456
+
+        e = (ThingA.foo == 123) & (ThingB.bparam == 456)
+        b = ThingB()
+        assert(e.eval(a,b))
+
+        # If a parameter doesn't exist, the behavior is to raise an AttributeError
+
+        # If a parameter is None, the behavior is customizable.
+        # 1) Raise an exception
+        class Thing(BoolExprEnabledClass):
+            __none_result__ = BoolExprNoneResultException
+
+        e = Thing.foo > 45
+        t = Thing()
+        t.foo = None
+        self.assertRaises(BoolExprNoneResultException, e.eval, t)
+
+        # 2) Return true or false when a parameter is None
+        Thing.__none_result__ = False
+        e = Thing.foo > 45
+        assert(e.eval(t) == False)
+
+        # There are times when the class you want to use as an expression
+        # already has __getattribute__ overridden and conflicts with how boolexpr
+        # works.  In this case, a proxy class can be used.
+
+        class Thing:
+            # class where __getattr__ or __getattribute__ conflict with boolexpr
+            # and class cannot inherit from BoolExprEnabledClass
+            pass
+
+        class ThingProxy(BoolExprEnabledClass):
+            __proxy_class__ = Thing
+
+        e = ThingProxy.foo == 45
+        t = Thing()
+        t.foo = 45
+        assert(e.eval(t) == True)
+
+
+    def test_non_existant_param(self):
+
+        class ThingA(BoolExprEnabledClass):
+            pass
+
+        e = ThingA.foo == 123
+        self.assertRaises(AttributeError, e.eval, ThingA())
+        # This could be customized to do other things in the future if we want...
