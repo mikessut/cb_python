@@ -29,7 +29,6 @@ class TestBoolExpr(unittest.TestCase):
         b.mylist = [1,2,3,4]
 
         e = ThingA.a < ThingB.b
-        #import pdb; pdb.set_trace()
         self.assertTrue(e.eval(a, b))
 
         e = 0 < ThingA.a
@@ -88,7 +87,6 @@ class TestBoolExpr(unittest.TestCase):
         b.mylist = [1,2,3,4]
 
         e = ThingAProxy.a < ThingBProxy.b
-        #import pdb; pdb.set_trace()
         self.assertTrue(e.eval(a, b))
 
         e = 0 < ThingAProxy.a
@@ -146,6 +144,10 @@ class TestBoolExpr(unittest.TestCase):
         ThingA.__none_result__ = BoolExprNoneResultException
         self.assertRaises(BoolExprNoneResultException, e.eval, a)
 
+        ThingA.__none_result__ = None
+        e = ThingA.none_param
+        self.assertTrue(e.eval(a) is None)
+
     def test_doc_demo(self):
         class ThingA(BoolExprEnabledClass):
 
@@ -187,7 +189,8 @@ class TestBoolExpr(unittest.TestCase):
         t.foo = None
         self.assertRaises(BoolExprNoneResultException, e.eval, t)
 
-        # 2) Return true or false when a parameter is None
+        # 2) Return true, false, or None when a parameter is None.
+        # Note: all classes for an expression must have the same __none_result__
         Thing.__none_result__ = False
         e = Thing.foo > 45
         assert(e.eval(t) == False)
@@ -218,3 +221,16 @@ class TestBoolExpr(unittest.TestCase):
         e = ThingA.foo == 123
         self.assertRaises(AttributeError, e.eval, ThingA())
         # This could be customized to do other things in the future if we want...
+
+    def test_class_func(self):
+        class Thing(BoolExprEnabledClass):
+
+            def func(self):
+                return 123
+
+        e = Thing.func == 124
+        t = Thing()
+        self.assertFalse(e.eval(t))
+
+        e = Thing.func == 123
+        self.assertTrue(e.eval(t))

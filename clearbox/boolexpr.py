@@ -167,7 +167,10 @@ class ClassParameter:
         if self._op is not None:
             return self._op(getattr(obj, self._name))
         else:
-            return getattr(obj, self._name)
+            result = getattr(obj, self._name)
+            if callable(result):
+                return result()
+            return result
 
     def __getattr__(self, func):
         """Run function on parameter.
