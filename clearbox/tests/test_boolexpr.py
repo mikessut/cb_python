@@ -40,6 +40,9 @@ class TestBoolExpr(unittest.TestCase):
         e2 = 2 < ThingB.mylist.len
         self.assertTrue(e2.eval(a,b))
 
+        e = ThingB.mylist.len != 1
+        self.assertTrue(e.eval(b))
+
         e3 = (ThingA.a == 123)
         self.assertTrue(e3.eval(a,b))
 
@@ -234,3 +237,51 @@ class TestBoolExpr(unittest.TestCase):
 
         e = Thing.func == 123
         self.assertTrue(e.eval(t))
+
+        # Test with __proxy_class__
+        class Thing:
+            def func(self):
+                return 123
+
+        class ThingProxy(BoolExprEnabledClass):
+            __proxy_class__ = Thing
+
+        e = ThingProxy.func == 124
+        t = Thing()
+        self.assertFalse(e.eval(t))
+
+        e = ThingProxy.func == 123
+        self.assertTrue(e.eval(t))
+
+    def test_class_func_func(self):
+        class Thing(BoolExprEnabledClass):
+            __none_result__ = False
+            def func(self):
+                return [1,2,3,4,5]
+
+            def none_func(self):
+                return None
+
+        e = Thing.func.len > 2
+        t = Thing()
+        self.assertTrue(e.eval(t))
+
+        e = Thing.none_func.len > 2
+        self.assertFalse(e.eval(t))
+
+        e = Thing.none_func.len == 0
+        self.assertFalse(e.eval(t))
+
+    def test_not_op(self):
+        class Thing(BoolExprEnabledClass):
+            foo = False
+
+        e = Thing.foo != True
+        # Note following doesn't work
+        # e = not Thing.foo
+        t = Thing()
+        self.assertTrue(e.eval(t))
+
+        # Currently not implemented...
+        # e = ~Thing.foo
+        # self.assertTrue(e.eval(t))

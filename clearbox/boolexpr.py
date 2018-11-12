@@ -154,6 +154,18 @@ class ClassParameter:
     def __sub__(self, other):
         return Expression(self, other, '__sub__')
 
+    def __ne__(self, other):
+        return Expression(self, other, '__ne__')
+
+    # Not implemented for now.  Breaks the model... easier to just use alternative
+    # syntax.  Instead of:
+    # ~Thing.foo
+    # use
+    # Thing.foo == False
+    # def __invert__(self):
+    #     print("here")
+    #     return True
+
     def eval(self, *objs):
         #print(type(objs))
         #print([type(x) for x in objs])
@@ -165,12 +177,21 @@ class ClassParameter:
                 (('__proxy_class__' in self._cls.__dict__.keys()) and
                 isinstance(x, self._cls.__proxy_class__))))
         if self._op is not None:
-            return self._op(getattr(obj, self._name))
+            result = getattr(obj, self._name)
+            if callable(result):
+                result2 = result()
+                if result2 is None:
+                    return None
+                else:
+                    return self._op(result2)
+            else:
+                return self._op(result)
         else:
             result = getattr(obj, self._name)
             if callable(result):
                 return result()
-            return result
+            else:
+                return result
 
     def __getattr__(self, func):
         """Run function on parameter.
