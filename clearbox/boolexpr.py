@@ -157,14 +157,8 @@ class ClassParameter:
     def __ne__(self, other):
         return Expression(self, other, '__ne__')
 
-    # Not implemented for now.  Breaks the model... easier to just use alternative
-    # syntax.  Instead of:
-    # ~Thing.foo
-    # use
-    # Thing.foo == False
-    # def __invert__(self):
-    #     print("here")
-    #     return True
+    def __invert__(self):
+        return Expression(self, False, '__eq__')
 
     def eval(self, *objs):
         #print(type(objs))

@@ -282,6 +282,5 @@ class TestBoolExpr(unittest.TestCase):
         t = Thing()
         self.assertTrue(e.eval(t))
 
-        # Currently not implemented...
-        # e = ~Thing.foo
-        # self.assertTrue(e.eval(t))
+        e = ~Thing.foo
+        self.assertTrue(e.eval(t))
