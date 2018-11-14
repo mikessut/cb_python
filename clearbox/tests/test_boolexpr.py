@@ -284,3 +284,7 @@ class TestBoolExpr(unittest.TestCase):
 
         e = ~Thing.foo
         self.assertTrue(e.eval(t))
+
+        t.foo = True
+        e = Thing.foo
+        self.assertTrue(e.eval(t))
