@@ -95,7 +95,7 @@ class Expression:
 
     def _eval(self, class_parameter_list, class_parameter_result, *objs):
         if isinstance(self.a, ClassParameter):
-                a = self.a.eval(*objs)
+                a = self.a._eval(*objs)
                 class_parameter_list.append(self.a)
                 class_parameter_result.append(a)
         elif isinstance(self.a, Expression):
@@ -104,7 +104,7 @@ class Expression:
                 a = self.a
 
         if isinstance(self.b, ClassParameter):
-                b = self.b.eval(*objs)
+                b = self.b._eval(*objs)
                 class_parameter_list.append(self.b)
                 class_parameter_result.append(b)
         elif isinstance(self.b, Expression):
@@ -160,22 +160,35 @@ class ClassParameter:
     def __invert__(self):
         return Expression(self, False, '__eq__')
 
-    def eval(self, *objs):
-        #print(type(objs))
-        #print([type(x) for x in objs])
-        #print(self._cls)
-        #print(isinstance(objs[0], self._cls))
-        #print(self._cls.__proxy_class__)
+    def _eval(self, *objs, **kwargs):
         obj = next(x for x in objs
                 if (isinstance(x, self._cls) or
                 (('__proxy_class__' in self._cls.__dict__.keys()) and
                 isinstance(x, self._cls.__proxy_class__))))
+
+        result = getattr(obj, self._name)
+        if callable(result):
+            result = result()
+        if result is None:
+            if ('return_none_result' in kwargs.keys()) and kwargs['return_none_result']:
+                return self._cls.__none_result__
+            else:
+                return None
+        if self._op is not None:
+            return self._op(result)
+        else:
+            return result
+
+        """
         if self._op is not None:
             result = getattr(obj, self._name)
             if callable(result):
                 result2 = result()
                 if result2 is None:
-                    return None
+                    if ('return_none_result' in kwargs.keys()) and kwargs['return_none_result']:
+                        return self._cls.__none_result__
+                    else:
+                        return None
                 else:
                     return self._op(result2)
             else:
@@ -186,6 +199,11 @@ class ClassParameter:
                 return result()
             else:
                 return result
+                """
+
+    def eval(self, *args):
+        #import pdb; pdb.set_trace()
+        return self._eval(*args, return_none_result=True)
 
     def __getattr__(self, func):
         """Run function on parameter.

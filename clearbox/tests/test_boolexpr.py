@@ -227,9 +227,19 @@ class TestBoolExpr(unittest.TestCase):
 
     def test_class_func(self):
         class Thing(BoolExprEnabledClass):
+            __none_result__ = True
 
             def func(self):
                 return 123
+
+            def bool_func(self):
+                return True
+
+            def bool_func_not(self):
+                return False
+
+            def none_func(self):
+                return None
 
         e = Thing.func == 124
         t = Thing()
@@ -237,6 +247,22 @@ class TestBoolExpr(unittest.TestCase):
 
         e = Thing.func == 123
         self.assertTrue(e.eval(t))
+
+        e = Thing.bool_func
+        self.assertTrue(e.eval(t))
+        e = Thing.bool_func_not
+        self.assertFalse(e.eval(t))
+
+        e = Thing.none_func
+        self.assertTrue(e.eval(t))
+
+        e = Thing.none_param
+        t.none_param = None
+        self.assertTrue(e.eval(t))
+        Thing.__none_result__ = False
+        self.assertFalse(e.eval(t))
+        Thing.__none_result__ = None
+        self.assertTrue(e.eval(t) is None)
 
         # Test with __proxy_class__
         class Thing:
