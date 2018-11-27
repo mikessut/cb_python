@@ -317,7 +317,7 @@ class TestBoolExpr(unittest.TestCase):
 
     def test_string_contains(self):
         class Thing(BoolExprEnabledClass):
-            astring = "this is a string"
+            astring = "this is a STRING"
 
         e = Thing.astring.contains('is')
         t = Thing()
@@ -326,4 +326,16 @@ class TestBoolExpr(unittest.TestCase):
         e = ~Thing.astring.contains('foobar')
         self.assertTrue(e.eval(t))
         e = Thing.astring.contains('foobar')
+        self.assertFalse(e.eval(t))
+
+        e = Thing.astring.lower == "this is a STRING".upper()
+        self.assertFalse(e.eval(t))
+
+        e = Thing.astring.lower == "this is a string"
+        self.assertTrue(e.eval(t))
+
+        e = Thing.astring.lower.contains('string')
+        self.assertTrue(e.eval(t))
+
+        e = Thing.astring.lower.contains('foobar')
         self.assertFalse(e.eval(t))

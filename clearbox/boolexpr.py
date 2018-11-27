@@ -181,31 +181,13 @@ class ClassParameter:
             else:
                 return None
         if self._op is not None:
-            return self._op(result)
+            if self._op in [x for x in dir(result)]:
+                return getattr(result, self._op)()
+            else:
+                func = eval(self._op)
+                return func(result)
         else:
             return result
-
-        """
-        if self._op is not None:
-            result = getattr(obj, self._name)
-            if callable(result):
-                result2 = result()
-                if result2 is None:
-                    if ('return_none_result' in kwargs.keys()) and kwargs['return_none_result']:
-                        return self._cls.__none_result__
-                    else:
-                        return None
-                else:
-                    return self._op(result2)
-            else:
-                return self._op(result)
-        else:
-            result = getattr(obj, self._name)
-            if callable(result):
-                return result()
-            else:
-                return result
-                """
 
     def eval(self, *args):
         #import pdb; pdb.set_trace()
@@ -216,7 +198,8 @@ class ClassParameter:
 
         E.g. ThingA.a.len will run len(ThingA().a) when evaluated
         """
-        return ClassParameter(self._cls, self._name, eval(func))
+        #print("getattr:",func)
+        return ClassParameter(self._cls, self._name, func)
 
 
 class BoolExprClass(type):
