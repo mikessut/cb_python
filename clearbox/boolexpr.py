@@ -93,6 +93,9 @@ class Expression:
     def __lt__(self, other):
         return Expression(self, other, '__lt__')
 
+    def __invert__(self):
+        return Expression(self, False, '__eq__')
+
     def _eval(self, class_parameter_list, class_parameter_result, *objs):
         if isinstance(self.a, ClassParameter):
                 a = self.a._eval(*objs)
@@ -160,6 +163,9 @@ class ClassParameter:
     def __invert__(self):
         return Expression(self, False, '__eq__')
 
+    def contains(self, other):
+        return Expression(self, other, '__contains__')
+
     def _eval(self, *objs, **kwargs):
         obj = next(x for x in objs
                 if (isinstance(x, self._cls) or
@@ -211,8 +217,7 @@ class ClassParameter:
         E.g. ThingA.a.len will run len(ThingA().a) when evaluated
         """
         return ClassParameter(self._cls, self._name, eval(func))
-    #def len(self):
-    #  return ClassParameter(self._cls, self._name, len)
+
 
 class BoolExprClass(type):
 

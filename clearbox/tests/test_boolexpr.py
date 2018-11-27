@@ -314,3 +314,16 @@ class TestBoolExpr(unittest.TestCase):
         t.foo = True
         e = Thing.foo
         self.assertTrue(e.eval(t))
+
+    def test_string_contains(self):
+        class Thing(BoolExprEnabledClass):
+            astring = "this is a string"
+
+        e = Thing.astring.contains('is')
+        t = Thing()
+        self.assertTrue(e.eval(t))
+
+        e = ~Thing.astring.contains('foobar')
+        self.assertTrue(e.eval(t))
+        e = Thing.astring.contains('foobar')
+        self.assertFalse(e.eval(t))
