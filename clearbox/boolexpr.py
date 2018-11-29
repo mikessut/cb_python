@@ -73,10 +73,11 @@ class Expression:
 
     __none_result__ = False
 
-    def __init__(self, a, b, op):
+    def __init__(self, a, b, op, func=None):
         self.a = a
         self.b = b
         self.op = op
+        self.func = func
 
     def __and__(self, other):
         return Expression(self, other, '__and__')
@@ -95,6 +96,9 @@ class Expression:
 
     def __invert__(self):
         return Expression(self, False, '__eq__')
+
+    def abs(self):
+        return Expression(self.a, self.b, self.op, abs)
 
     def _eval(self, class_parameter_list, class_parameter_result, *objs):
         if isinstance(self.a, ClassParameter):
@@ -117,7 +121,10 @@ class Expression:
 
         if (a is None) or (b is None):
                 return None  # actual expression return will be determined by BoolExprEnabledClass.__none_result__
-        return getattr(a, self.op)(b)
+        if self.func is not None:
+            return self.func(getattr(a, self.op)(b))
+        else:
+            return getattr(a, self.op)(b)
 
     def eval(self, *objs):
         class_parameter_list = []
@@ -129,7 +136,7 @@ class Expression:
 
         if any([x is None for x in class_parameter_result]):
                 if class_parameter_list[0]._cls.__none_result__ == BoolExprNoneResultException:
-                        raise BoolExprNoneResultException()
+                    raise BoolExprNoneResultException()
                 return class_parameter_list[0]._cls.__none_result__
 
         return result

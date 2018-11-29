@@ -339,3 +339,16 @@ class TestBoolExpr(unittest.TestCase):
 
         e = Thing.astring.lower.contains('foobar')
         self.assertFalse(e.eval(t))
+
+    def test_outside_func(self):
+        class Thing(BoolExprEnabledClass):
+            pass
+
+        e = (Thing.a - Thing.b).abs() > 10
+        t = Thing()
+        t.a = 10
+        t.b = 100
+
+        self.assertTrue(e.eval(t))
+        e = (Thing.a - Thing.b) > 10
+        self.assertFalse(e.eval(t))
