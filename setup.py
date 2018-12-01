@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name='clearbox',
-      version='0.25',
+      version='0.26',
       description='Clearbox Python Module',
       author='Mike Sutton',
       packages=['clearbox'],
