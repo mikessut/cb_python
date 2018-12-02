@@ -1,6 +1,6 @@
 from flask import Flask, Response, request
 import json
-import alexa
+import gkeep
 
 app = Flask(__name__)
 application = app
@@ -9,24 +9,6 @@ application = app
 Doc at:
 https://developer.amazon.com/docs/custom-skills/request-and-response-json-reference.html#response-format
 
-"""
-
-test_response = """
-{
-  "version": "1.0",
-  "sessionAttributes": {
-    "key": "value"
-  },
-  "response": {
-    "outputSpeech": {
-      "type": "PlainText",
-      "text": "Plain text string to speak",
-      "ssml": "<speak>SSML text string to speak</speak>",
-      "playBehavior": "REPLACE_ENQUEUED"
-    }
-  },
-    "shouldEndSession": true
-  }
 """
 
 
@@ -50,8 +32,9 @@ def index():
 
     if ('name' in intent.keys()) and (intent['name'] == 'read_list'):
         keep = alexa.login()
-        l = alexa.grocery_list(keep)
-        # print("list:",l)
+        list_name = intent['slots']['list_name']['value']
+        list_id = gkeep.LISTS[list_name]
+        gkeep.read_list(keep, list_id)
 
         ssmltxt = '<speak>'
         ssmltxt += ''.join(x + '<break strength="medium"/>' for x in l)
@@ -65,10 +48,12 @@ def index():
                     mimetype="application/json;charset=UTF-8")
     elif ('name' in intent.keys()) and (intent['name'] == 'add_to_list'):
         item = intent['slots']['item']['value']
+        list_name = intent['slots']['list_name']['value']
+        list_id = gkeep.LISTS[list_name]
         keep = alexa.login()
-        alexa.add2grocery(keep, item)
+        gkeep.add_to_list(keep, list_id)
         dict_response = {'version': "1.0",
-                        "response": {"outputSpeech": {'type': 'PlainText', 'text': f'adding {item} to grocery list'}}}
+                        "response": {"outputSpeech": {'type': 'PlainText', 'text': f'adding {item} to {list_name} list'}}}
         resp = Response(response=json.dumps(dict_response),
                     status=200,
                     mimetype="application/json;charset=UTF-8")
