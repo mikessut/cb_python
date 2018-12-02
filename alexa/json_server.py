@@ -31,10 +31,10 @@ def index():
     # print(intent)
 
     if ('name' in intent.keys()) and (intent['name'] == 'read_list'):
-        keep = alexa.login()
+        keep = gkeep.login()
         list_name = intent['slots']['list_name']['value']
-        list_id = gkeep.LISTS[list_name]
-        gkeep.read_list(keep, list_id)
+        list_id = gkeep.LISTS[list_name.lower()]
+        l = gkeep.read_list(keep, list_id)
 
         ssmltxt = '<speak>'
         ssmltxt += ''.join(x + '<break strength="medium"/>' for x in l)
@@ -49,16 +49,16 @@ def index():
     elif ('name' in intent.keys()) and (intent['name'] == 'add_to_list'):
         item = intent['slots']['item']['value']
         list_name = intent['slots']['list_name']['value']
-        list_id = gkeep.LISTS[list_name]
-        keep = alexa.login()
-        gkeep.add_to_list(keep, list_id)
+        list_id = gkeep.LISTS[list_name.lower()]
+        keep = gkeep.login()
+        gkeep.add_to_list(keep, list_id, item)
         dict_response = {'version': "1.0",
                         "response": {"outputSpeech": {'type': 'PlainText', 'text': f'adding {item} to {list_name} list'}}}
         resp = Response(response=json.dumps(dict_response),
                     status=200,
                     mimetype="application/json;charset=UTF-8")
     else:
-        print("Unknown intent")
+        #print("Unknown intent")
         dict_response = {'version': "1.0",
                         "response": {"outputSpeech": {'type': 'PlainText', 'text': 'unknown or intent not specified'}}}
         resp = Response(response=json.dumps(dict_response),
