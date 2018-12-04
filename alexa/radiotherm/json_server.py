@@ -47,7 +47,7 @@ def index():
                     status=200,
                     mimetype="application/json;charset=UTF-8")
     elif ('name' in intent.keys()) and (intent['name'] == 'set_temp'):
-        temp = intent['slots']['temp']['value']
+        temp = int(intent['slots']['temp']['value'])
         thermostat.setTemp(temp)
         dict_response = {'version': "1.0",
                         "response": {"outputSpeech": {'type': 'PlainText',
@@ -66,4 +66,4 @@ def index():
 
 if __name__ == '__main__':
     #print(json.loads(test_response))
-    app.run(debug=True)
+    app.run(debug=True, port=4001)
