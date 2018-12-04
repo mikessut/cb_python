@@ -30,10 +30,15 @@ def setTemp(temp):
     server.start()
     r = requests.get('http://{thermostat_ip}:{thermostat_port}/tstat/temp'.format(thermostat_ip='127.0.0.1',
                                                                                   thermostat_port=server.local_bind_port))
-    server.stop()
     j = json.loads(r.text)
 
     if 't_heat' in j.keys():
-        requests.post('http://' + THERMOSTAT_IP + '/tstat', data=json.dumps({'t_heat': temp}))
+        requests.post('http://{thermostat_ip}:{thermostat_port}/tstat'.format(thermostat_ip='127.0.0.1',
+                                                                              thermostat_port=server.local_bind_port),
+                      data=json.dumps({'t_heat': temp}))
     elif 't_cool' in j.keys():
-        requests.post('http://' + THERMOSTAT_IP + '/tstat', data=json.dumps({'t_cool': temp}))
+        requests.post('http://{thermostat_ip}:{thermostat_port}/tstat'.format(thermostat_ip='127.0.0.1',
+                                                                              thermostat_port=server.local_bind_port),
+                      data=json.dumps({'t_heat': temp}))
+
+    server.stop()
