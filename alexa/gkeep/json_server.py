@@ -21,6 +21,10 @@ def index():
     # print(request.form)
     # print(request.json)
 
+    if (request.json is None) or ('request' not in request.json.keys()):
+        return Response(response=json.dumps({}),
+                    status=200,
+                    mimetype="application/json;charset=UTF-8")
     alexa_request = request.json['request']
     if 'intent' in alexa_request.keys():
         intent = alexa_request['intent']
@@ -68,4 +72,4 @@ def index():
 
 if __name__ == '__main__':
     #print(json.loads(test_response))
-    app.run(debug=True, port=4001)
+    app.run(debug=True)
