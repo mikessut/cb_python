@@ -1,7 +1,4 @@
-sshtunnel
+paramiko
 requests
 flask
 zappa
-click
-#pynacl==1.3.0
-#cryptography==1.9
