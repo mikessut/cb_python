@@ -21,6 +21,19 @@
             "what's the temperature",
             "what's the indoor temperature"
           ]
+        },
+        {
+          "name": "SetTempIntent",
+          "slots": [
+              {
+                  "name": "temp",
+                  "type": "AMAZON.NUMBER"
+              }
+          ],
+          "samples": [
+            "set the temperature to {temp} degrees",
+            "set the temperature to {temp}"
+          ]
         }
       ]
     }

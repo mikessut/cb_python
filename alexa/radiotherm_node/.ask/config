@@ -10,7 +10,7 @@
         },
         "interactionModel": {
           "en-US": {
-            "eTag": "2f9ebb9ac3d441a0867b4c38e32d08dc"
+            "eTag": "fa50bcbbf770fc5fcf417f963854dd32"
           }
         },
         "lambda": [
@@ -23,7 +23,7 @@
             "codeUri": "lambda/custom",
             "functionName": "ask-custom-skill-radiotherm-default",
             "handler": "index.handler",
-            "revisionId": "355afca7-120a-46e1-8945-0af6dd70beca",
+            "revisionId": "95cc2015-af6c-40d5-8189-a61a9e4cfc56",
             "runtime": "nodejs8.10"
           }
         ]

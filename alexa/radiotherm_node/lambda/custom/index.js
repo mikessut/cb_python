@@ -37,6 +37,24 @@ const GetTempIntentHandler = {
   },
 };
 
+
+const SetTempIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'SetTempIntent';
+  },
+  async handle(handlerInput) {
+    let temp = parseInt(handlerInput.requestEnvelope.request.intent.slots.temp.value);
+    radiotherm.setTemp(temp);
+    const speechText = `setting temperature to ${temp}`;
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .withSimpleCard('SetTemp', speechText)
+      .getResponse();
+  },
+};
+
 const HelpIntentHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -99,6 +117,7 @@ const skillBuilder = Alexa.SkillBuilders.custom();
 exports.handler = skillBuilder
   .addRequestHandlers(
     GetTempIntentHandler,
+    SetTempIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler
