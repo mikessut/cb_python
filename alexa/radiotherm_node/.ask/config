@@ -1,0 +1,33 @@
+{
+  "deploy_settings": {
+    "default": {
+      "skill_id": "amzn1.ask.skill.c3b0166c-c31f-44ee-8f21-3f841ce478c4",
+      "was_cloned": false,
+      "merge": {},
+      "resources": {
+        "manifest": {
+          "eTag": "ca33626622c82760e28699e0c5a0d0f8"
+        },
+        "interactionModel": {
+          "en-US": {
+            "eTag": "2f9ebb9ac3d441a0867b4c38e32d08dc"
+          }
+        },
+        "lambda": [
+          {
+            "alexaUsage": [
+              "custom/default"
+            ],
+            "arn": "arn:aws:lambda:us-east-1:172691456784:function:ask-custom-skill-radiotherm-default",
+            "awsRegion": "us-east-1",
+            "codeUri": "lambda/custom",
+            "functionName": "ask-custom-skill-radiotherm-default",
+            "handler": "index.handler",
+            "revisionId": "355afca7-120a-46e1-8945-0af6dd70beca",
+            "runtime": "nodejs8.10"
+          }
+        ]
+      }
+    }
+  }
+}
