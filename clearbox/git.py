@@ -43,7 +43,7 @@ def get_branch():
     uncommitted changes.
     """
     txt = os.popen(f'git status -s -b').read().strip()
-    m = re.search('## (.*)\s', txt)
+    m = re.search('## ([^\.]*)(\.\.\.)?([^\.]*)\s', txt)
     branch = m.group(1)
 
     m = re.search('M (.*)\s', txt)
