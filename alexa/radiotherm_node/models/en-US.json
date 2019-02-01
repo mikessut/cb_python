@@ -1,0 +1,41 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "thermostat",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "GetTempIntent",
+          "samples": [
+            "what's the temperature",
+            "what's the indoor temperature"
+          ]
+        },
+        {
+          "name": "SetTempIntent",
+          "slots": [
+              {
+                  "name": "temp",
+                  "type": "AMAZON.NUMBER"
+              }
+          ],
+          "samples": [
+            "set the temperature to {temp} degrees",
+            "set the temperature to {temp}"
+          ]
+        }
+      ]
+    }
+  }
+}
