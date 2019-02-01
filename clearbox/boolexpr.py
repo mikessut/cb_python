@@ -170,6 +170,9 @@ class ClassParameter:
     def __invert__(self):
         return Expression(self, False, '__eq__')
 
+    def __floordiv__(self, other):
+        return Expression(self, other, '__floordiv__')
+
     def contains(self, other):
         return Expression(self, other, '__contains__')
 
