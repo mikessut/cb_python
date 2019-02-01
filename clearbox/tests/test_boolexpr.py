@@ -352,3 +352,23 @@ class TestBoolExpr(unittest.TestCase):
         self.assertTrue(e.eval(t))
         e = (Thing.a - Thing.b) > 10
         self.assertFalse(e.eval(t))
+
+    def test_divide(self):
+        class Thing(BoolExprEnabledClass):
+            pass
+
+        e = (Thing.a // 100) == 21
+        t = Thing()
+        t.a = 2112
+
+        self.assertTrue(e.eval(t))
+
+        t.a = 2212
+        self.assertFalse(e.eval(t))
+
+        e = ((Thing.a // 100) == 21) | ((Thing.a // 100) == 22)
+
+        t.a = 2112
+        self.assertTrue(e.eval(t))
+        t.a = 2212
+        self.assertTrue(e.eval(t))
