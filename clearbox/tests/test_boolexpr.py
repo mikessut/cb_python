@@ -37,6 +37,10 @@ class TestBoolExpr(unittest.TestCase):
         e2 = ThingB.mylist.len > 2
         self.assertTrue(e2.eval(a,b))
 
+        # With __call__ added can also do like this:
+        e2 = ThingB.mylist.len() > 2
+        self.assertTrue(e2.eval(a,b))
+
         e2 = 2 < ThingB.mylist.len
         self.assertTrue(e2.eval(a,b))
 
@@ -372,3 +376,16 @@ class TestBoolExpr(unittest.TestCase):
         self.assertTrue(e.eval(t))
         t.a = 2212
         self.assertTrue(e.eval(t))
+
+    def test_string_char(self):
+        class Thing(BoolExprEnabledClass):
+            pass
+
+        e = Thing.a.startswith('D')
+
+        t = Thing()
+        t.a = 'D123'
+
+        self.assertTrue(e.eval(t))
+        e = Thing.a.startswith('1')
+        self.assertFalse(e.eval(t))

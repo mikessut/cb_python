@@ -144,10 +144,11 @@ class Expression:
 
 class ClassParameter:
 
-    def __init__(self, cls, name, op=None):
+    def __init__(self, cls, name, op=None, args=None):
         self._cls = cls
         self._name = name
         self._op = op
+        self._args = args
 
     def __lt__(self, other):
         return Expression(self, other, '__lt__')
@@ -192,7 +193,10 @@ class ClassParameter:
                 return None
         if self._op is not None:
             if self._op in [x for x in dir(result)]:
-                return getattr(result, self._op)()
+                if self._args is not None:
+                    return getattr(result, self._op)(*self._args)
+                else:
+                    return getattr(result, self._op)()
             else:
                 func = eval(self._op)
                 return func(result)
@@ -210,6 +214,18 @@ class ClassParameter:
         """
         #print("getattr:",func)
         return ClassParameter(self._cls, self._name, func)
+
+    def __call__(self, *args):
+        """
+        Allows ability to run a function. E.g. string functions such as
+        startswith()
+        """
+        #print("args", args)
+        #print("_name", self._name)
+        #print("_cls", self._cls)
+        #print("_op", self._op)
+        return ClassParameter(self._cls, self._name, self._op, args)
+
 
 
 class BoolExprClass(type):
