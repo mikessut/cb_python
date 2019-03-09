@@ -4,6 +4,7 @@ import enum
 import datetime
 import numpy as np
 from numpy import log, exp, sqrt
+from scipy.optimize import root_scalar
 
 class OPTION_TYPE(enum.Enum):
     CALL = 'call'
@@ -68,6 +69,7 @@ class Option(object) :
         self.r = r
         self.sigma = sigma
         self.put_call = put_call
+        self.calc()
 
     @staticmethod
     def fromDF(df,idx,r=.01):
@@ -223,30 +225,41 @@ class Option(object) :
 
         return output
 
+    @staticmethod
+    def get_opt_with_price(price, T, S, K, r, put_call):
+        guess = .21
+        o = Option(T, S, K, r, guess, put_call)
 
-
-    def IV(self,price,guess=.21,sf=1.0):
-        origK = self.K
-        origS = self.S
-        self.K = self.K*sf
-        self.S = self.S*sf
         def objFunc(sigma):
-            #self.sigma = sigma[0]
-            self.sigma = sigma
-            return (price*sf - self.price())**2
-        #sigma = fmin(objFunc,guess,disp=False,xtol=1e-12,ftol=1e-12)[0]
-        #sigma = fminbound(objFunc,0.05,1,)
-        #sigma = brute(objFunc,[(.05,1.0)])[0]
-        #sigma = basinhopping(objFunc,guess).x
-        #sigma = minimize_scalar(objFunc,bracket=(.05,1.0),method='golden').x
-        def objFunc2(sigma):
-            self.sigma = sigma
-            return price - self.price()
-        sigma = brentq(objFunc2,.000001,10)
-        self.sigma = sigma
-        self.K = origK
-        self.S = origS
-        return sigma
+            o.sigma = sigma
+            o.calc()
+            return price - o.price()
+        #sigma = brentq(objFunc2,.000001,10)
+        sol = root_scalar(objFunc, x0=guess, method='bisect', bracket=[.0001, 2])
+        o.sigma = sol.root
+        o.calc()
+        return o
+
+    @staticmethod
+    def get_opt_with_delta(delta, T, S, r, iv, put_call):
+        """
+        Get option for specified delta.
+        """
+        o = Option(T, S, S, r, iv, put_call)
+        origK = S
+        def objFunc(strike):
+            o.K = strike
+            o.calc()
+            return o.delta() - delta
+
+        sol = root_scalar(objFunc, x0=S, method='bisect', bracket=[.1*S, 10*S])
+        o.K = sol.root
+        o.calc()
+        return o
+
+    def __repr__(self):
+        return f"<Option {self.put_call} @ {self.K} {self.T*365} days out>"
+
 
 
 def covered_call_yield():
