@@ -389,3 +389,41 @@ class TestBoolExpr(unittest.TestCase):
         self.assertTrue(e.eval(t))
         e = Thing.a.startswith('1')
         self.assertFalse(e.eval(t))
+
+    def test_str_repr(self):
+        class ThingA(BoolExprEnabledClass):
+            pass
+
+        class ThingB(BoolExprEnabledClass):
+            pass
+
+        a = ThingA()
+        a.a = 123
+        b = ThingB()
+        b.b = 456
+        b.mylist = [1,2,3,4]
+
+        e = ThingA.a < ThingB.b
+        self.assertEqual(str(e), 'ThingA.a < ThingB.b')
+
+        class Proxy(BoolExprEnabledClass):
+            pass
+
+        e = (Proxy.get_transactions.len > 200) | (Proxy.get_transactions.len < 100)
+        #print(e)
+        self.assertEqual(str(e), '(Proxy.get_transactions.len > 200) | (Proxy.get_transactions.len < 100)')
+
+        e = ~Proxy.status.contains('P') & ~Proxy.status.contains('Pe') &  ~Proxy.status.contains('DC')
+        #print(e)
+        # slightly different syntax, but equivalent
+        self.assertEqual(str(e),
+             "(((Proxy.status.contains('P')) == False) & ((Proxy.status.contains('Pe')) == False)) & ((Proxy.status.contains('DC')) == False)")
+
+        e = ((Proxy.group // 100) == 21) | \
+            ((Proxy.group // 100) == 24) | \
+            ((Proxy.group // 100) == 26) | \
+            ((Proxy.group // 100) == 27) | \
+            ((Proxy.group // 100) == 36) | \
+            ((Proxy.group // 100) == 37)
+
+        print(e)

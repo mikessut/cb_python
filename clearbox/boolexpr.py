@@ -69,6 +69,16 @@ t.foo = 45
 assert(e.eval(t) == True)
 """
 
+import re
+
+FUNC2SYM = {'__lt__': '<',
+            '__gt__': '>',
+            '__or__': '|',
+            '__and__': '&',
+            '__eq__': '==',
+            '__floordiv__': '//'}
+
+
 class Expression:
 
     __none_result__ = False
@@ -141,6 +151,26 @@ class Expression:
 
         return result
 
+    def __repr__(self):
+        """Only support simple expressions for starters
+        """
+        #try:
+        if isinstance(self.a, Expression):
+            a = f'({str(self.a)})'
+        else:
+            a = str(self.a)
+        if isinstance(self.b, Expression):
+            b = f'({str(self.b)})'
+        else:
+            b = str(self.b)
+        if self.op == '__contains__':
+            return f"{a}.contains('{b}')"
+        else:
+            op = FUNC2SYM[self.op]
+            return f"{a} {op} {b}"
+        #except Exception:
+        #    return 'complex'
+
 
 class ClassParameter:
 
@@ -175,6 +205,9 @@ class ClassParameter:
         return Expression(self, other, '__floordiv__')
 
     def contains(self, other):
+        """
+        string syntax of '1' in '123' uses __contains__()
+        """
         return Expression(self, other, '__contains__')
 
     def _eval(self, *objs, **kwargs):
@@ -225,6 +258,16 @@ class ClassParameter:
         #print("_cls", self._cls)
         #print("_op", self._op)
         return ClassParameter(self._cls, self._name, self._op, args)
+
+    def __repr__(self):
+        class_name = re.search(".*\.(?P<cls>.*)'>", str(self._cls)).group('cls')
+        if self._op is not None:
+            if self._args is not None:
+                return f"{class_name}.{self._name}.{self._op}({self._args})"
+            else:
+                return f"{class_name}.{self._name}.{self._op}"
+        else:
+            return f"{class_name}.{self._name}"
 
 
 
