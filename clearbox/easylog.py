@@ -1,7 +1,7 @@
 import logging
 
 
-def get_logger(fn, log_name, console=True, debug_console=False, debug_file=True):
+def get_logger(fn, log_name, console=True, debug_console=False, debug_file=True, log_level=True):
 
     console_handler = logging.StreamHandler()
     if debug_console:
@@ -15,7 +15,10 @@ def get_logger(fn, log_name, console=True, debug_console=False, debug_file=True)
         file_handler.setLevel(logging.DEBUG)
     else:
         file_handler.setLevel(logging.INFO)
-    file_handler.setFormatter(logging.Formatter('%(asctime)s:%(name)s:%(message)s'))
+    if log_level:
+        file_handler.setFormatter(logging.Formatter('%(asctime)s:%(name)s:%(levelname).1s:%(message)s'))
+    else:
+        file_handler.setFormatter(logging.Formatter('%(asctime)s:%(name)s:%(message)s'))
 
     log = logging.getLogger(log_name)
     log.addHandler(file_handler)
